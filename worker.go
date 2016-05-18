@@ -1,9 +1,6 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "fmt"
 
 // NewWorker creates, and returns a new Worker object. Its only argument
 // is a channel that the worker can add itself to whenever it is done its
@@ -37,10 +34,15 @@ func (w *Worker) Start() {
 			select {
 			case work := <-w.Work:
 				// Receive a work request.
-				fmt.Printf("worker%d: Received work request, delaying for %d seconds\n", w.ID, 1)
+				fmt.Printf("worker%d: Received work request %s\n", w.ID, work.URL)
 
-				time.Sleep(1 * time.Second)
-				fmt.Printf("worker%d: Hello, %s!\n", w.ID, work.URL)
+				status, err := MakeRequest(work)
+
+				if err != nil {
+					fmt.Printf("%s: %s\n", work.URL, err.Error())
+				}
+
+				fmt.Printf("%s: %s\n", status, work.URL)
 
 			case <-w.QuitChan:
 				// We have been asked to stop.
