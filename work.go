@@ -11,18 +11,30 @@ type WorkRequests struct {
 }
 
 type WorkRequest struct {
-	URL     string `json:"url"`
-	Cookies string `json:"cookies"`
-	Headers string `json:"headers"`
+	URL     string     `json:"url"`
+	Cookies []KeyValue `json:"cookies"`
+	Headers []KeyValue `json:"headers"`
+}
+
+type KeyValue struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 func MakeRequest(w WorkRequest) (string, error) {
 	var query = []byte("")
 	req, err := http.NewRequest("GET", w.URL, bytes.NewBuffer(query))
 
-	req.Header.Set("Content-Type", "text/plain")
-	//req.Header.Set()
-	//req.AddCookie()
+	// add the cookies
+	for _, cookie := range w.Cookies {
+		c := http.Cookie{Name: cookie.Key, Value: cookie.Value}
+		req.AddCookie(&c)
+	}
+
+	// add the headers
+	for _, header := range w.Headers {
+		req.Header.Add(header.Key, header.Value)
+	}
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

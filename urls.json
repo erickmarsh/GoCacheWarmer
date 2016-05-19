@@ -2,43 +2,57 @@
     "data": [
     {
         "url": "http://www.google.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [
+            {
+                "key": "content-type",
+                "value": "text/html"
+            },
+            {
+                "key": "Accept-Encoding",
+                "value": "gzip,deflate"
+            }
+        ],
+        "cookies": [
+            {
+                "key": "PHPSESSID",
+                "value": "r2t5uvjq435r4q7ib3vtdjq120"
+            }
+        ]
     },
         {
         "url": "http://www.yahoo.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [],
+        "cookies": []
     },
         {
         "url": "http://www.gizmodo.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [],
+        "cookies": []
     },
         {
         "url": "http://www.woot.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [],
+        "cookies": []
     },
         {
         "url": "http://www.vox.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [],
+        "cookies": []
     },
         {
         "url": "http://www.example.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [],
+        "cookies": []
     },
         {
         "url": "http://www.reddit.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [],
+        "cookies": []
     },
         {
         "url": "http://engadget.com",
-        "headers": "",
-        "cookies": ""
+        "headers": [],
+        "cookies": []
     }
     ]
-]
+}

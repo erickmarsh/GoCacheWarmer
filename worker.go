@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"strconv"
+)
 
 // NewWorker creates, and returns a new Worker object. Its only argument
 // is a channel that the worker can add itself to whenever it is done its
@@ -42,7 +46,7 @@ func (w *Worker) Start() {
 					fmt.Printf("%s: %s\n", work.URL, err.Error())
 				}
 
-				fmt.Printf("%s: %s\n", status, work.URL)
+				fmt.Printf("worker%d: %s: %s\n", w.ID, status, work.URL)
 
 			case <-w.QuitChan:
 				// We have been asked to stop.
@@ -60,4 +64,38 @@ func (w *Worker) Stop() {
 	go func() {
 		w.QuitChan <- true
 	}()
+}
+
+func Workers(w http.ResponseWriter, r *http.Request) {
+	// Make sure we can only be called with an HTTP POST request.
+	if r.Method != "POST" {
+		w.Header().Set("Allow", "POST")
+		w.WriteHeader(http.StatusMethodNotAllowed)
+		return
+	}
+
+	//	body, err := ioutil.ReadAll(r.Body)
+	//	defer r.Body.Close()
+	/*
+		if err != nil {
+			http.Error(w, "No JSON Body Posted", http.StatusBadRequest)
+			return
+		}
+	*/
+	workerCount := r.FormValue("workers")
+
+	i, err := strconv.Atoi(workerCount)
+
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	} else if i > 0 {
+		fmt.Println("Adjusting worker count")
+		AdjustWorkers(i)
+		w.WriteHeader(http.StatusOK)
+	} else {
+		http.Error(w, "Worker Count must be positive", http.StatusBadRequest)
+	}
+
+	return
 }
