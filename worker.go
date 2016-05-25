@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 )
 
 // NewWorker creates, and returns a new Worker object. Its only argument
@@ -48,11 +49,17 @@ func (w *Worker) Start() {
 
 				fmt.Printf("worker%d: %s: %s\n", w.ID, status, work.URL)
 
+				//fmt.Printf("Queue Len, Cap = %d, %d\n", len(w.WorkerQueue), cap(w.WorkerQueue))
+				fmt.Println("removing from wait group")
+				BatchWaitGroup.Done()
+				time.Sleep(time.Duration(*PostRequestPause) * time.Second)
+
 			case <-w.QuitChan:
 				// We have been asked to stop.
 				fmt.Printf("worker%d stopping\n", w.ID)
 				return
 			}
+
 		}
 	}()
 }

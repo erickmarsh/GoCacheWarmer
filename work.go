@@ -7,11 +7,18 @@ import (
 )
 
 type WorkRequests struct {
-	Data []WorkRequest `json:"data"`
+	ID          string                 `json:"_id"`
+	CallbackURL string                 `json:"callback_url"`
+	ClientEnv   string                 `json:"client_env"`
+	Priority    int64                  `json:"priority"`
+	URLs        map[string]WorkRequest `json:"urls"`
 }
 
 type WorkRequest struct {
+	BatchID string
 	URL     string     `json:"url"`
+	IP      string     `json:"ip"`
+	Host    string     `json:"host"`
 	Cookies []KeyValue `json:"cookies"`
 	Headers []KeyValue `json:"headers"`
 }

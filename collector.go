@@ -1,17 +1,19 @@
 package main
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 )
 
-// A buffered channel that we can send work requests on.
+// WorkQueue - A buffered channel that we can send work requests on.
 var WorkQueue = make(chan WorkRequest, 100)
 
+// ActiveWorkRequests - a map of the active url batches
+//var ActiveWorkRequests = make(map[string]WorkRequests)
+
+// Collector is the main handler for accepting new urls via a POST
 func Collector(w http.ResponseWriter, r *http.Request) {
 	// Make sure we can only be called with an HTTP POST request.
 	if r.Method != "POST" {
@@ -28,7 +30,7 @@ func Collector(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	workItemsAddedCount, err := addWorkToQueue(body, w)
+	workItemsAddedCount, err := addWorkToQueue(body)
 
 	if err != nil {
 		http.Error(w, "Cannot parse json body", http.StatusBadRequest)
@@ -42,19 +44,4 @@ func Collector(w http.ResponseWriter, r *http.Request) {
 	// And let the user know their work request was created.
 	w.WriteHeader(http.StatusCreated)
 	return
-}
-
-func addWorkToQueue(body []byte, w http.ResponseWriter) (int, error) {
-	workReqs := WorkRequests{}
-	err := json.Unmarshal(body, &workReqs)
-
-	if err != nil {
-		return 0, errors.New("Error parsing json")
-	}
-
-	for _, work := range workReqs.Data {
-		WorkQueue <- work
-	}
-
-	return len(workReqs.Data), nil
 }

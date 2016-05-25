@@ -1,8 +1,13 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"sync"
+)
 
 var WorkerQueue chan chan WorkRequest
+
+var WorkerWaitGroup sync.WaitGroup
 
 var ActiveWorkers = -1
 
@@ -16,6 +21,7 @@ func StartDispatcher(nworkers int) {
 	// Now, create all of our workers.
 	for i := 0; i < nworkers; i++ {
 		fmt.Println("Starting worker", i+1)
+		WorkerWaitGroup.Add(1)
 		worker := NewWorker(i+1, WorkerQueue)
 		worker.Start()
 	}
@@ -24,16 +30,16 @@ func StartDispatcher(nworkers int) {
 		for {
 			select {
 			case work := <-WorkQueue:
-				fmt.Println("Received work requeust %s", string(work.URL))
 				go func() {
 					worker := <-WorkerQueue
-
-					//fmt.Println("Dispatching work request")
 					worker <- work
 				}()
 			}
 		}
 	}()
+
+	//WorkerWaitGroup.Wait()
+	fmt.Println("All workers are done")
 }
 
 func AdjustWorkers(nworkers int) {
